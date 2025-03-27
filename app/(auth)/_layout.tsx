@@ -1,0 +1,18 @@
+import { Stack } from "expo-router";
+import { useColorScheme } from "react-native";
+
+export default function TabLayout() {
+  const colorScheme = useColorScheme();
+
+  return (
+    <Stack
+      screenOptions={{
+   headerShown:false
+      }}>
+   <Stack.Screen name="Auth"/>
+     <Stack.Screen name="Login"/>
+     <Stack.Screen name="Signup"/>
+     <Stack.Screen name="VerifyOtp"/>
+    </Stack>
+  );
+}
