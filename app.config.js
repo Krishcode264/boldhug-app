@@ -4,7 +4,7 @@ export default {
       slug: "your-app",
       version: "1.0.0",
       extra: {
-        BACKEND_URL:"http://192.168.101.81:8080",
+        BACKEND_URL:"http://192.168.132.81:8080",
         ENV: "production",
       },
     

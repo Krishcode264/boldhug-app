@@ -2,7 +2,7 @@ import { View, Text, Image, SafeAreaView, FlatList } from "react-native";
 import React, { useState } from "react";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-import { EllipsisVertical, Settings } from "lucide-react-native";
+import { EllipsisVertical, Loader, Settings } from "lucide-react-native";
 import Button from "@/components/base/Button";
 import SelectBar from "@/components/profile/SelectBar";
 import { ActiveListType } from "@/constants/Types";
@@ -18,22 +18,37 @@ import CommentListView from "@/components/event/CommentList";
 import Drawer from "@/components/custum/Drawer";
 import { Event } from "@/components/event/Event";
 const GuestProfile = () => {
-  const { id, userName, profilePhoto } = useLocalSearchParams();
-  const { user } = useUserState();
-  //  const fetchUserProfile=async ()=>{
-  //     const res=await api.get(`/user/${id}`)
-  //     return res.data
-  //  }
+  const { id } = useLocalSearchParams();
+  
 
-  // const {isLoading,error,data,isSuccess}=useQuery({
-  //     queryFn:fetchUserProfile,
-  //     queryKey:[`user/${id}`]
-  // })
 
-  const [activeList, setActiveList] = useState<ActiveListType>("posts");
+  const [activeList, setActiveList] = useState<ActiveListType>("post");
   const [CommentView, setCommentView] = useState<boolean>(false);
+
+  const fetchUserProfile=async ()=>{
+    const res=await api.get(`/user/${id}`)
+   // console.log(res.data,"guest user data")
+    return res.data.data
+ }
+
+const {isLoading,error,data:user,isSuccess}=useQuery({
+    queryFn:fetchUserProfile,
+    queryKey:[`user/${id}`]
+})
+
+
+  const { isLoading:loading, data,  isError } = useQuery({
+    queryFn: async () => {
+      const response = await api.get(`/${activeList}/${id}`);
+    //  console.log("response", response.data);
+      return response.data;
+    },
+
+    queryKey: [`${activeList}`],
+  });
+
   return (
-    <SafeAreaView className="h-full  mx-auto p-2 ">
+    <SafeAreaView className="h-full w-full  mx-auto p-2 ">
       <View className=" flex flex-row items-center relative mt-4 p-4">
         <View className="flex flex-row items-center  gap-4">
           <Image
@@ -46,7 +61,7 @@ const GuestProfile = () => {
             </Text>
             <Text className="font-semibold">
               ({user?.age}
-              {user?.gender == "Male" ? "M" : "F"})
+              {user?.gender == "male" ? "M" : "F"})
             </Text>
           </View>
         </View>
@@ -60,39 +75,58 @@ const GuestProfile = () => {
       <SelectBar setActiveList={setActiveList} activeList={activeList} />
 
       <View className="flex-1  bg-white">
-        {activeList === "events" && (
-          <FlatList
-            className=""
-            data={UserprofileData.events}
-            renderItem={({ item: event }) => {
-              return <Event key={event.id} event={event} />;
-            }}
-          />
+      {isLoading && (
+          <Icon className="mx-auto">
+            <Loader size={30} color="violet" />
+          </Icon>
         )}
-        {activeList === "posts" && (
-          <>
-            {CommentView && (
-              <Drawer
-                onClose={() => setCommentView(false)}
-                children={<CommentListView />}
-              />
-            )}
 
+        {activeList === "event" &&
+          data &&
+          (data.length > 0 ? (
             <FlatList
-              className="  "
-              renderItem={({ item }) => (
-                <EventPost
-                  eventPost={item}
-                  toggleCommentDrawer={setCommentView}
+              className=" w-full h-full "
+              data={data}
+              renderItem={({ item: event }) => {
+                return <Event key={event.id} event={event} />;
+              }}
+            />
+          ) : (
+            <Text className="text-center mt-12">no events found 😏</Text>
+          ))}
+ 
+        {activeList === "post" &&
+          data &&
+          (data.length > 0 ? (
+            <>
+              {CommentView && (
+                <Drawer
+                  onClose={() => setCommentView(false)}
+                  children={<CommentListView />}
                 />
               )}
-              data={UserprofileData.eventPost}
-            />
-          </>
-        )}
-        {activeList === "friends" && (
+
+              <FlatList
+                className="  "
+                renderItem={({ item }) => (
+                  <EventPost
+                  key={item.id}
+                    eventPost={item}
+                    toggleCommentDrawer={setCommentView}
+                  />
+                )}
+                data={data}
+              />
+            </>
+          ) : (
+            <Text className="text-center mt-12"> no posts found 😊</Text>
+          ))}
+
+        {activeList === "friend" && data && (data.length>0 ?  (
           <FriendList users={UserprofileData.friends} />
-        )}
+        ):(<Text  className="text-center mt-12">
+          no friend found
+        </Text>))}
       </View>
     </SafeAreaView>
   );

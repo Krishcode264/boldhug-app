@@ -19,7 +19,7 @@ import { useApi } from "@/hooks/axios";
 import api from "@/util/axios";
 import { sendtoS3 } from "@/util/functions";
 const CreateTwo = () => {
-  const { event, mediaList, updateMedia, removeMedia } = useEventState();
+  const { event, mediaList, updateMedia, removeMedia ,createEvent} = useEventState();
   const router = useRouter();
   const { user } = useUserState();
 
@@ -28,7 +28,7 @@ const CreateTwo = () => {
       const file = await Picker.launchImageLibraryAsync({
         mediaTypes: ["images", "videos"],
         aspect: [4, 3],
-        quality: 1,
+        quality: 0.6,
         allowsMultipleSelection: true,
       });
       //console.log("here are there files and media files ",file.assets,file.canceled)
@@ -42,39 +42,39 @@ const CreateTwo = () => {
   };
   const { width, height } = Dimensions.get("window");
 
-  const handleCreateEvent = async () => {
-    try {
-      const eventResponse = await api.post("/event", { event });
-      if (eventResponse.data.success) {
-        const getSignedUrls = await api.post("/media/preurl", {
+// const handleCreateEvent = async () => {
+//     try {
+//       const eventResponse = await api.post("/event", { event });
+//       if (eventResponse.data.success) {
+//         const getSignedUrls = await api.post("/media/preurl", {
            
-            data: mediaList.map((media) => ({
-              type: media.type,
-              fileName: media.fileName,
-            })),
-            mediaGroupId: eventResponse.data.event.id,
-            mediaGroupType: "event",
+//             data: mediaList.map((media) => ({
+//               type: media.type,
+//               fileName: media.fileName,
+//             })),
+//             mediaGroupId: eventResponse.data.event.id,
+//             mediaGroupType: "event",
           
-        });
-        if (getSignedUrls.data.urlArray) {
-          console.log("we got the array of signed urls ")
-          const alldata = await sendtoS3({
-            media: mediaList,
-            urlArray: getSignedUrls.data.urlArray,
-          });
-          console.log("we sent it to s3 just heyyy ")
-          if (alldata) {
-             const finalres=await api.post("/media/confirm",{data:alldata,mediaGroupId:eventResponse.data.event.id,parentType:"event"})
-             if(finalres.data.success){
-              console.log("hey all done bro chill here , confirmation done ")
-             }
-          }
-        }
-      }
-    } catch(err) {
-      console.log("something got wrong",err)
-    }
-  };
+//         });
+//         if (getSignedUrls.data.urlArray) {
+//           console.log("we got the array of signed urls ")
+//           const alldata = await sendtoS3({
+//             media: mediaList,
+//             urlArray: getSignedUrls.data.urlArray,
+//           });
+//           console.log("we sent it to s3 just heyyy ")
+//           if (alldata) {
+//              const finalres=await api.post("/media/confirm",{data:alldata,mediaGroupId:eventResponse.data.event.id,parentType:"event"})
+//              if(finalres.data.success){
+//               console.log("hey all done bro chill here , confirmation done ")
+//              }
+//           }
+//         }
+//       }
+//     } catch(err) {
+//       console.log("something got wrong",err)
+//     }
+//   };
   return (
     <SafeAreaWrapper className="bg-gray-100 px-2 flex-1 ">
       <View className="w-full  bg-gray-100 shadow-slate-800  p-1 rounded-md flex gap-2">
@@ -144,7 +144,10 @@ const CreateTwo = () => {
         <ArrowLeft color={"darkviolet"} size={35} />
       </Button>
       <Button
-        onPress={handleCreateEvent}
+        onPress={()=>{
+          createEvent()
+          router.push("/create-three")
+        }}
         className={clsx(
           " w-[90%] bg-violet-500 px-4 py-3 rounded-2xl mx-auto my-4"
         )}

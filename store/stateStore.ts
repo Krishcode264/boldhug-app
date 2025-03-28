@@ -6,6 +6,7 @@ export type OnBordingUser = {
   gender?: "male" | "female" | "other";
   age?: number;
   profilePhoto?: ImagePickerAsset;
+  name?:string;
 };
 interface OnBoardingState {
   userName?: string;
@@ -13,7 +14,8 @@ interface OnBoardingState {
   age?: number;
   profilePhoto?: ImagePickerAsset;
   setState: (state:OnBordingUser) => void;
-  removeState:()=>void
+  removeState:()=>void;
+  name?:string;
 }
 
 export const useOnBoardingState = create<OnBoardingState>((set) => ({

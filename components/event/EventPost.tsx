@@ -12,8 +12,7 @@ import Button from '@/components/base/Button';
 import {FlatList} from 'react-native';
 
 import { Heart, MessageCircle, Navigation, Share2 } from 'lucide-react-native';
-import { useNavigation } from '@react-navigation/native';
-import {UserprofileData} from '@/db/user';
+
 import EventMediaAttachment from './EventMediaAttachment';
 import { useRouter } from 'expo-router';
 const PostStats = ({
@@ -61,6 +60,7 @@ const PostStats = ({
 export type Attachment = {
   type: string | 'image' | 'video';
   url: string;
+  id:string
 };
 export type Stats = {
   likes: number;
@@ -68,12 +68,17 @@ export type Stats = {
   shares: number;
 };
 export type EventPostType = {
-  userName: string;
-  profilePhoto?: string;
+  author:{
+    userName:string;
+    id:string;
+    profilePhoto:{url:string};
+  }
+ 
   title: string;
   tags: string[];
-  attachments: Attachment[];
-  stats: Stats;
+  attachment: Attachment[];
+  likes:number;
+  createdAt:string;
 };
 export type EventPostProps = {
   eventPost: EventPostType;
@@ -85,8 +90,8 @@ const EventPost: FC<EventPostProps> = ({eventPost, toggleCommentDrawer}) => {
   return (
     <View className=" w-auto  rounded-xl bg-violet-50 mb-2 p-1 pb-8">
       <Button onPress={()=>{ 
-        console.log("clcikedr")
-       router.push({pathname:"guest",params:{id:"",userName:eventPost.userName,profilePhoto:eventPost.profilePhoto}})
+       // console.log("clcikedr")
+       router.push(`(profile)/${eventPost.author.id}`)
           //  navigator.navigate("ProfileTabs",{
           //    screen:"GuestProfile",
           //    params:{...UserprofileData,name:eventPost.userName,profilePhoto:eventPost.profilePhoto as string}
@@ -94,34 +99,35 @@ const EventPost: FC<EventPostProps> = ({eventPost, toggleCommentDrawer}) => {
       }}>
       <View className="flex flex-row items-center my-2 mx-3 ml-1 gap-4  p-2 bg-white rounded-2xl">
         <Image
-          source={{uri: eventPost.profilePhoto}}
+          source={{uri:eventPost?.author?.profilePhoto.url}}
           className="w-12 h-12 rounded-full"
         />
         <Text className="text-xl font-medium text-black  ">
-          {eventPost.userName}
+          {eventPost?.author?.userName}
         </Text>
       </View>
       </Button>
    
-      {eventPost.attachments.length > 0 && (
+      {eventPost?.attachment?.length > 0 && (
         <FlatList
           horizontal={true}
           scrollEventThrottle={500}
           keyExtractor={(item, index) => item.url}
-          data={eventPost.attachments}
+          data={eventPost.attachment}
           renderItem={({item}) => (
-            <EventMediaAttachment url={item.url} type={item.type} />
+            <EventMediaAttachment id={item.id} url={item.url} type={item.type} />
           )}
         />
       )}
 
       <Text className="mt-1 px-2 text-xl font-medium  text-pretty text-slate-600">
-        {eventPost.title}
+        {eventPost?.title}
       </Text>
       <PostStats
-        stats={eventPost.stats}
+        stats={{likes:eventPost.likes,shares:0,comments:10}}
         toggleCommentDrawer={toggleCommentDrawer}
       />
+      <Text style={{textAlign:"right",marginHorizontal:2}} className='my-0 text-xs'> {new Date(eventPost.createdAt).toDateString()}</Text>
     </View>
   );
 };

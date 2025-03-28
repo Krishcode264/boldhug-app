@@ -8,8 +8,9 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 export default function TabLayout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="index" options={{ title: "Profile" }} />
-      <Stack.Screen name="guest" options={{ title: "Profile" }} />
+      <Stack.Screen name="user" options={{ title: "Profile" }} />
+      <Stack.Screen name="[id]" options={{ title: "Profile" }} />
+      
     </Stack>
   );
 }

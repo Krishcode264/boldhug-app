@@ -20,7 +20,7 @@ const Settings = () => {
   return (
     <SafeAreaWrapper>
      
-     <Button onPress={handleLogout} className='bg-red-600  py-3 w-[90%] mx-auto rounded-xl '>
+     <Button onPress={handleLogout} className='bg-red-600  py-3 w-[60%] mx-auto rounded-xl '>
         <Text className='text-white text-center text-xl font-medium space-x-5'>
             Signout
         </Text>

@@ -31,7 +31,7 @@ export const useApi = () => {
       }
 
       setData(res.data);
-      console.log(`Response from ${type} request:`, res.data);
+      //console.log(`Response from ${type} request:`, res.data);
       return res.data;
 
     } catch (err) {

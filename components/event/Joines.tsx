@@ -42,7 +42,7 @@ const Joines = () => {
       {
         data.map((profilePhoto,index)=>{
             return(
-                <Image  className={clsx("w-10 h-10  rounded-full border-2 border-violet-400",index!==0 && "ml-[-14]") } source={{uri:profilePhoto.profile_photo}}/>
+                <Image key={profilePhoto.id} className={clsx("w-10 h-10  rounded-full border-2 border-violet-400",index!==0 && "ml-[-14]") } source={{uri:profilePhoto.profile_photo}}/>
             )
         })
       } 

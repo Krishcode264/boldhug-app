@@ -20,31 +20,21 @@ const useAuthNavigation = () => {
       const token = await getValueFromEcriptedStorage("token");
       const refreshToken = await getValueFromEcriptedStorage("refresh_token");
 
-      if (user && token) {
-        // console.log(token)
-        setLoading(false);
-
-        return;
-      }
-      if (parsedUser && token && JSON.parse(parsedUser)) {
-        console.log("we have user and token ");
-
-        setUser(JSON.parse(parsedUser));
-        setLoading(false);
-        return;
-      } else {
-        if (token) {
-          console.log("we have an token ");
+      if (token) {
+    
+        
+      
           const res = await getUser("/user", {}, "GET");
-          if (res.user) {
-            setUser(res.user);
+          if (res) {
+            setUser(res.data);
             setLoading(false);
             return;
           }
-        } else {
-          setLoading(false);
-          router.replace("(auth)/Auth");
-        }
+        
+      }
+      else{
+        setLoading(false);
+        return
       }
     })();
   }, []);

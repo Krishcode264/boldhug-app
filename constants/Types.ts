@@ -27,4 +27,4 @@ export type Attachment = {
        name:string
      }
 
-    export type ActiveListType = 'posts' | 'friends' | 'events';
+    export type ActiveListType = 'post' | 'friend' | 'event';

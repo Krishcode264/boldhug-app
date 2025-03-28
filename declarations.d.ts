@@ -5,3 +5,5 @@ declare module '*.svg' {
     export default content;
   }
   
+
+  declare module 'react-native-svg-circular-progress'

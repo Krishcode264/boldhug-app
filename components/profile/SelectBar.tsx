@@ -13,38 +13,38 @@ type RenderListProps = {
 };
 const SelectBar = ({activeList,setActiveList}:RenderListProps) => {
   return (
-    <View className=" bg-violet-50 rounded-xl    p-3 flex flex-row items-center justify-between px-4">
+    <View className=" bg-white rounded-xl    p-3 flex flex-row items-center justify-between px-4">
       <Button
-        onPress={() => setActiveList('posts')}
+        onPress={() => setActiveList('post')}
         className={cn(
           'bg-white  px-4 rounded-2xl',
-          activeList == 'posts' &&
+          activeList == 'post' &&
             'bg-violet-600 text-white  shadow-violet-500 ',
         )}>
         <Text
-          className={cn(activeList === 'posts' && 'text-white font-medium')}>
+          className={cn(activeList === 'post' && 'text-white font-medium')}>
           Posts
         </Text>
       </Button>
       <Button
-        onPress={() => setActiveList('events')}
+        onPress={() => setActiveList('event')}
         className={cn(
           'bg-white px-4  rounded-2xl',
-          activeList == 'events' && 'bg-violet-600 text-white ',
+          activeList == 'event' && 'bg-violet-600 text-white ',
         )}>
         <Text
-          className={cn(activeList === 'events' && 'text-white font-medium')}>
+          className={cn(activeList === 'event' && 'text-white font-medium')}>
           Events
         </Text>
       </Button>
       <Button
-        onPress={() => setActiveList('friends')}
+        onPress={() => setActiveList('friend')}
         className={cn(
           'bg-white px-4 rounded-2xl',
-          activeList == 'friends' && 'bg-violet-600 text-white ',
+          activeList == 'friend' && 'bg-violet-600 text-white ',
         )}>
         <Text
-          className={cn(activeList === 'friends' && 'text-white font-medium')}>
+          className={cn(activeList === 'friend' && 'text-white font-medium')}>
           Friends
         </Text>
       </Button>

@@ -1,31 +1,30 @@
-import {View, Text, Image, StatusBar, Modal, Dimensions} from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import { View, Text, Image, StatusBar, Modal, Dimensions } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
 
+import { FlatList } from "react-native";
 
+import Drawer from "@/components/custum/Drawer";
 
-import {ScrollView} from 'react-native';
-
-import {FlatList} from 'react-native';
-import AppLogo from '@/assests/logos/BoldHug.svg';
-import {VideoDecoderProperties} from 'react-native-video';
-import VideoPlayer from '@/components/custum/VideoPlayer';
-import {eventsdata} from '@/db/db';
-import Drawer from '@/components/custum/Drawer';
-import {cn} from '@/util/functions';
-import Button from '@/components/base/Button';
-
-import EventPost from '@/components/event/EventPost';
-import { events } from '../../db/event';
-import { useUserState } from '@/store/userStore';
-import CommentListView from '@/components/event/CommentList';
-import SearchBar from '@/components/event/SearchBar';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import EventPost from "@/components/event/EventPost";
+import { useUserState } from "@/store/userStore";
+import CommentListView from "@/components/event/CommentList";
+import SearchBar from "@/components/event/SearchBar";
+import { SafeAreaView } from "react-native-safe-area-context";
+import api from "@/util/axios";
+import { useQuery } from "@tanstack/react-query";
+import FeedLoader from "@/components/animated/FeedLoader";
 const HomeScreen = () => {
-  const {
-  user
-  } = useUserState();
 
   const [CommentView, setCommentView] = useState<boolean>(false);
+
+  const { isLoading, data, error, isError } = useQuery({
+    queryFn: async () => {
+      const response = await api.get(`/post/random`);
+      // console.log(response.data.posts[0], "here are the posts");
+      return response.data.posts;
+    },
+    queryKey: [`posts`],
+  });
 
 
   return (
@@ -35,20 +34,26 @@ const HomeScreen = () => {
         <SearchBar />
       </View>
 
+{
+  isLoading &&  (<FeedLoader/>)
+}
       {CommentView && (
         <Drawer
           onClose={() => setCommentView(false)}
           children={<CommentListView />}
         />
       )}
-
-      <FlatList
-        className="  "
-        renderItem={({item}) => (
-          <EventPost eventPost={item} toggleCommentDrawer={setCommentView} />
-        )}
-        data={eventsdata}
-      />
+   
+       
+      { !isLoading  &&  (data.length > 0 )? (
+        <FlatList
+          className="  "
+          renderItem={({ item }) => (
+            <EventPost eventPost={item} toggleCommentDrawer={setCommentView} />
+          )}
+          data={data}
+        />
+      ):(<Text className="text-center mt-12 ">no posts found 😓 , we are working on it ...</Text>)}
     </SafeAreaView>
   );
 };

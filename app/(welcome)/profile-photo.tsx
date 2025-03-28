@@ -19,9 +19,10 @@ import LoadingScreen from "@/components/base/LoadingScreen";
 import axios, { AxiosError } from "axios";
 import ErrorModal from "@/components/custum/ErrorModal";
 import { Buffer } from 'buffer';
+import InputBox from "@/components/base/Input";
 const EditprofilePhoto = () => {
   const { width, height } = Dimensions.get("screen");
-  const { profilePhoto, setState, userName, gender, age } =
+  const { profilePhoto, setState, userName, gender, age, name } =
     useOnBoardingState();
   const [loading, setLoading] = useState({ isLoading: false, message: "" });
   const [err, setErr] = useState({ isError: false, error: "" });
@@ -33,7 +34,7 @@ const EditprofilePhoto = () => {
       mediaTypes: ["images"],
       allowsEditing: true,
       aspect: [3, 3],
-      quality: 1,
+      quality: 0.5,
       allowsMultipleSelection: false,
     });
     if (file.assets?.length && file.assets.length > 0) {
@@ -45,7 +46,7 @@ const EditprofilePhoto = () => {
     setLoading({ isLoading: true, message: "updating profile" });
     try {
       setLoading({ isLoading: true, message: "updating profile" });
-      const res = await api.patch("/user", { data:{ userName, gender, age }});
+      const res = await api.patch("/user", { data:{ userName, gender, age,name }});
     //  console.log("user update",res.data)
       const photoUpload = await api.get("/user/profile-photo/upload-url", {
         params: {
@@ -75,7 +76,8 @@ const EditprofilePhoto = () => {
         });
       //  console.log("confirmation success",photoUri.data)
         if (photoUri.data.url) {
-          setUser({profilePhoto:{url:photoUri.data.url,id:photoUri.data.id} });
+          setUser({profilePhoto:{url:photoUri.data.url,id:photoUri.data.id,type:"image"} });
+          
         }
       }
       setLoading({ isLoading: false, message: "" });
@@ -129,6 +131,17 @@ const EditprofilePhoto = () => {
           </>
         )}
       </View>
+
+      <InputBox
+        style={{textAlignVertical:"top"}}
+        onChangeText={(text)=> setState({})}
+        multiline
+        value={ name }
+        placeholder="your name "
+        className="w-full text-xl text-black  bg-gray-200 rounded-2xl     "
+     
+    
+      />
       <Text className="font-semibold text-violet-700 text-xl">
         set up profile Photo
       </Text>

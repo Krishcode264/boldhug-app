@@ -9,7 +9,7 @@ interface SafeAreaWrapperType extends SafeAreaViewProps{
 }
 const SafeAreaWrapper:React.FC<SafeAreaWrapperType> = ({ children ,className,...props}) => {
   return (
-    <SafeAreaView style={{marginTop:StatusBar.currentHeight}}  className={clsx(" ",className)} {...props}>
+    <SafeAreaView style={{marginTop:StatusBar.currentHeight}}  className={clsx(" h-full w-full ",className)} {...props}>
       {children}
     </SafeAreaView>
   );

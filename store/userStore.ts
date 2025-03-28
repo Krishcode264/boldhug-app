@@ -1,36 +1,56 @@
+import { ImagePickerAsset } from "expo-image-picker";
 import { create } from "zustand";
 
-export type ProfilePhoto={
-  id:string;
-  url:string;
-}
+export type ProfilePhoto = {
+  id: string;
+  url: string;
+  type:string
+};
 export type User = {
-    id:string;
-    userName?:string ;
-    age?: number ;
-    gender?: string ;
-    email?: string ;
-    intrests: string[];
-    createdAt: Date;
-    updatedAt: Date;
-    role?:"user"|"admin";
-    mobileNo?: string ;
-    profilePhoto?:ProfilePhoto;
+  id: string;
+  name?:string;
+  userName?: string;
+  age?: number;
+  gender?: string;
+  email?: string;
+  intrests: string[];
+  createdAt: Date;
+  updatedAt: Date;
+  role?: "user" | "admin";
+  mobileNo?: string;
+  profilePhoto?: ProfilePhoto;
+};
+export type EditUser = {
+  profilePhoto: ImagePickerAsset|null;
+  name: string;
+};
+export type EditUserProfile = {
+  user: EditUser | null;
+  setState: (user: EditUser) => void;
 };
 export interface UserState {
   user: User | null;
   isAuthenticated: boolean;
-  setUser: (user:Partial<User>) => void;
+  setUser: (user: Partial<User>) => void;
   logout: () => void;
 }
+
+export const useEditUserState = create<EditUserProfile>((set) => ({
+  user: null,
+  setState: (user) => set((store) => ({ user: { ...store.user, ...user } })),
+}));
 
 export const useUserState = create<UserState>((set) => ({
   user: null,
   isAuthenticated: false,
   setUser: (user) =>
     set((state) => ({
-      isAuthenticated: true, 
-      user: state.user ? { ...state.user, ...user } : (user.id ? { ...user } as User : null),
+      isAuthenticated: true,
+      user: state.user
+        ? { ...state.user, ...user }
+        : user.id
+        ? ({ ...user } as User)
+        : null,
     })),
   logout: () => set({ user: null, isAuthenticated: false }),
 }));

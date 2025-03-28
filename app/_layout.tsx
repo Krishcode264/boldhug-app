@@ -22,7 +22,7 @@ SplashScreen.preventAutoHideAsync();
 import * as NavigationBar from "expo-navigation-bar";
 import Loading from "@/components/custum/InitialLoading";
 import InitialLoading from "@/components/custum/InitialLoading";
-const queryClient = new QueryClient();
+export const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -68,6 +68,7 @@ export default function RootLayout() {
             <Stack.Screen name="(single)" options={{ headerShown: false }} />
             <Stack.Screen name="(event)" options={{ headerShown: false }} />
             <Stack.Screen name="(chat)" options={{ headerShown: false }} />
+            <Stack.Screen name="(setting)" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
           </Stack>
           <StatusBar style="auto" />

@@ -5,14 +5,8 @@ import { sendtoS3 } from "@/util/functions";
 import { ImagePickerAsset } from "expo-image-picker";
 import { create } from "zustand";
 
-export type Event = {
+export type Post = {
   title: string;
-  description: string;
-  location: string;
-  slots: number;
-  reservedSlots: number;
-  date: Date;
-  time: string;
 };
 
 export type Status = {
@@ -21,33 +15,27 @@ export type Status = {
   status: "pending" | "processing" | "failed" | "success";
 };
 
-export interface EventState {
-  event: Event;
+export interface PostState {
+  post: Post;
   mediaList: ImagePickerAsset[];
   status: Status | null;
-  update: (event: Partial<Event>) => void;
+  update: (event: Post) => void;
   updateMedia: (mediaList: ImagePickerAsset[]) => void;
   removeMedia: (id: string) => void;
   setDefaultStore: () => void;
-  createEvent: () => Promise<void>;
+  createPost: () => Promise<void>;
 }
 
-let defaultEventState: Event = {
-  time: "",
-  date: new Date(),
-  description: "",
-  slots: 0,
-  reservedSlots: 0,
+let defaultPostState: Post = {
   title: "",
-  location: "",
 };
 
-export const useEventState = create<EventState>((set, get) => ({
-  event: defaultEventState,
+export const usePostState = create<PostState>((set, get) => ({
+  post: defaultPostState,
   mediaList: [],
-  status: { label: "", progress: 0, status:"pending" },
+  status: { label: "", progress: 0, status: "pending" },
   setDefaultStore: () =>
-    set((store) => ({ event: defaultEventState, mediaList: [] })),
+    set((store) => ({ event: defaultPostState, mediaList: [] })),
   removeMedia: (filename) =>
     set((store) => ({
       mediaList: store.mediaList.filter((media) => media.fileName !== filename),
@@ -60,20 +48,20 @@ export const useEventState = create<EventState>((set, get) => ({
         (item, index, self) =>
           index === self.findIndex((m) => m.fileName === item.fileName)
       );
-      //   console.log(uniqueMedia)
+
       return { mediaList: uniqueMedia };
     }),
 
   update: (state) =>
-    set((eventStore) => ({ event: { ...eventStore.event, ...state } })),
+    set((postStore) => ({ post: { ...postStore.post, ...state } })),
 
-  createEvent: async () => {
+  createPost: async () => {
     set({
-      status: { label: "creating event", progress: 10, status: "processing" },
+      status: { label: "creating post", progress: 10, status: "processing" },
     });
     try {
-      const eventResponse = await api.post("/event", { event:get().event });
-      if (!eventResponse.data.success) throw new Error("Event creation failed");
+      const eventResponse = await api.post("/post", { post: get().post });
+      if (!eventResponse.data.success) throw new Error("post creation failed");
       set({
         status: {
           label: "generating presigned urls",
@@ -87,9 +75,10 @@ export const useEventState = create<EventState>((set, get) => ({
             type: media.type,
             fileName: media.fileName,
           })),
-          mediaGroupId: eventResponse.data.event.id,
-          mediaGroupType: "event",
+          mediaGroupId: eventResponse.data.post.id,
+          mediaGroupType: "post",
         });
+
         if (!getSignedUrls.data.urlArray)
           throw new Error("Failed to get signed URLs");
         set({
@@ -118,15 +107,15 @@ export const useEventState = create<EventState>((set, get) => ({
           if (alldata) {
             const finalres = await api.post("/media/confirm", {
               data: alldata,
-              mediaGroupId: eventResponse.data.event.id,
-              parentType: "event",
+              mediaGroupId: eventResponse.data.post.id,
+              parentType: "post",
             });
             if (!finalres.data.success)
               throw new Error("Media confirmation failed");
-            queryClient.invalidateQueries({ queryKey: ["event"] })
+            queryClient.invalidateQueries({ queryKey: ["post", "posts"] });
             set({
               status: {
-                label: "completed , Event created ",
+                label: "completed , Post created ",
                 progress: 100,
                 status: "success",
               },
@@ -140,7 +129,7 @@ export const useEventState = create<EventState>((set, get) => ({
     } catch (err) {
       set({
         status: {
-          label: "there was error creating event for you 😭",
+          label: "there was error creating post for you 😭",
           progress: 50,
           status: "failed",
         },
